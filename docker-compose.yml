@@ -22,8 +22,8 @@ services:
       - 7077:7077
       - 8080:8080
     volumes:
+      - ./data:/data
       - ./code:/app
-      - ./dataset:/dataset
 
   worker1:
     container_name: worker1
@@ -41,8 +41,8 @@ services:
       - "7077"
       - 8081:8080
     volumes:
+      - ./data:/data
       - ./code:/app
-      - ./dataset:/dataset
 
   worker2:
     container_name: worker2
@@ -60,8 +60,8 @@ services:
       - "7077"
       - 8082:8080
     volumes:
+      - ./data:/data
       - ./code:/app
-      - ./dataset:/dataset
 
   jupyter:
     container_name: jupyter
@@ -75,5 +75,44 @@ services:
       - "8888:8888"
     volumes:
       - ./jupyter/notebook:/notebook
-      - ./dataset:/dataset
+      - ./data:/data
       - ./code:/app
+
+  postgres:
+    container_name: postgres
+    image: postgres:11
+    restart: always
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/scripts:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DB: seminario
+      POSTGRES_USER: seminario
+      POSTGRES_PASSWORD: sem1nar10
+    ports:
+      - "5432:5432"
+
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+
+  superset:
+    container_name: superset
+    image: amancevice/superset
+    restart: always
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      MAPBOX_API_KEY: ${MAPBOX_API_KEY}
+      SUPERSET_HOME: /etc/superset
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./superset/conf/superset_config.py:/etc/superset/superset_config.py
+      - superset:/var/lib/superset
+
+volumes:
+  postgres-data:
+  superset:

@@ -55,7 +55,7 @@ function superset-stop {
 }
 
 function psql {
-  docker exec -it postgres psql -U workshop workshop
+  docker exec -it postgres psql -U seminario seminario
 }
 
 case $1 in
@@ -88,7 +88,7 @@ case $1 in
   superset-start )
   superset-start
     ;;
-  
+
   superset-stop )
   superset-stop
     ;;
